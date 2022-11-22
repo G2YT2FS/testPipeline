@@ -17,7 +17,6 @@ export class SrdPipelineTestStack extends cdk.Stack {
     });
 
     const sourceCode = new ppl.Artifact('sourceCode')
-    const oauth = SecretValue.secretsManager('test-mo-pipeline');
 
     pipeline.addStage({
       stageName:'source',
@@ -27,7 +26,7 @@ export class SrdPipelineTestStack extends cdk.Stack {
             repo:'testPipeline',
             branch:'master',
             actionName:'PipelineSource',
-            oauthToken:oauth,
+            oauthToken:SecretValue.secretsManager('test-mo-pipeline'),
             output:sourceCode
           })
       ]
