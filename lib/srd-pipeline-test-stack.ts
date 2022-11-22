@@ -1,13 +1,17 @@
 import * as cdk from 'aws-cdk-lib';
 import {
   aws_codepipeline as ppl,
-  aws_codepipeline_actions as cpa, SecretValue
+  aws_codepipeline_actions as cpa,
+  SecretValue,
+  aws_iam as iam
 } from 'aws-cdk-lib';
 
 import {Construct} from 'constructs';
 import {BuildSpec, LinuxBuildImage, PipelineProject} from "aws-cdk-lib/aws-codebuild";
 
 export class SrdPipelineTestStack extends cdk.Stack {
+
+  protected defaultRole: iam.IRole;
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
@@ -39,6 +43,7 @@ export class SrdPipelineTestStack extends cdk.Stack {
       actions:[
           new cpa.CodeBuildAction({
             actionName:'Build',
+            role:this.defaultRole,
             input:sourceCode,
             outputs:[cdkBuildOutput],
             project: new PipelineProject(this,'CodeBuildProject',{
