@@ -1,16 +1,57 @@
 import * as cdk from 'aws-cdk-lib';
-import { Construct } from 'constructs';
-// import * as sqs from 'aws-cdk-lib/aws-sqs';
+import {
+  aws_codepipeline as ppl,
+  aws_codepipeline_actions as cpa, SecretValue
+} from 'aws-cdk-lib';
+
+import {Construct} from 'constructs';
+import {BuildSpec, LinuxBuildImage, PipelineProject} from "aws-cdk-lib/aws-codebuild";
 
 export class SrdPipelineTestStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    // The code that defines your stack goes here
+    const pipeline = new ppl.Pipeline(this,'pipeline-test-mo', {
+      pipelineName:'Pipeline-test-mo',
+      crossAccountKeys:false
+    });
 
-    // example resource
-    // const queue = new sqs.Queue(this, 'SrdPipelineTestQueue', {
-    //   visibilityTimeout: cdk.Duration.seconds(300)
-    // });
+    const sourceCode = new ppl.Artifact('sourceCode')
+    const oauth = SecretValue.secretsManager('test-mo-pipeline');
+
+    pipeline.addStage({
+      stageName:'source',
+      actions:[
+          new cpa.GitHubSourceAction({
+            owner:'SmPaknejad',
+            repo:'testPipeline',
+            branch:'master',
+            actionName:'PipelineSource',
+            oauthToken:oauth,
+            output:sourceCode
+          })
+      ]
+    });
+
+    const cdkBuildOutput = new ppl.Artifact('CDKBuildOutput')
+
+    pipeline.addStage({
+      stageName:'Build',
+      actions:[
+          new cpa.CodeBuildAction({
+            actionName:'Build',
+            input:sourceCode,
+            outputs:[cdkBuildOutput],
+            project: new PipelineProject(this,'CodeBuildProject',{
+                environment: {
+                  buildImage: LinuxBuildImage.STANDARD_5_0
+                },
+              buildSpec:BuildSpec.fromSourceFilename('build-spec/cdk-build-spec.yml')
+
+            })
+          })
+      ]
+    })
+
   }
 }
