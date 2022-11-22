@@ -24,7 +24,7 @@ export class SrdPipelineTestStack extends cdk.Stack {
           new cpa.GitHubSourceAction({
             owner:'SmPaknejad',
             repo:'testPipeline',
-            branch:'master',
+            branch:'main',
             actionName:'PipelineSource',
             oauthToken:SecretValue.secretsManager('test-mo-pipeline'),
             output:sourceCode
