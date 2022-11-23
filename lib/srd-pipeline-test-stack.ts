@@ -3,7 +3,7 @@ import {
     aws_codepipeline as ppl,
     aws_codepipeline_actions as cpa,
     SecretValue,
-    aws_iam as iam
+    //aws_iam as iam
 } from 'aws-cdk-lib';
 
 import {Construct} from 'constructs';
@@ -41,7 +41,7 @@ export class SrdPipelineTestStack extends cdk.Stack {
             actions: [
                 new cpa.CodeBuildAction({
                     actionName: 'Build',
-                    role: iam.Role.fromRoleArn(this,'test-mo-cross-account-pipeline-role','arn:aws:iam::107711577954:role/test-mo-cross-account-pipeline-role'),
+                    //role: iam.Role.fromRoleArn(this,'test-mo-cross-account-pipeline-role','arn:aws:iam::107711577954:role/test-mo-cross-account-pipeline-role'),
                     input: sourceCode,
                     outputs: [cdkBuildOutput],
                     project: new PipelineProject(this, 'CodeBuildProject', {
