@@ -15,8 +15,7 @@ export class SrdPipelineTestStack extends cdk.Stack {
         super(scope, id, props);
 
         const pipeline = new ppl.Pipeline(this, 'pipeline-test-mo', {
-            pipelineName: 'Pipeline-test-mo',
-            crossAccountKeys: false
+            pipelineName: 'Pipeline-test-mo'
         });
 
         const sourceCode = new ppl.Artifact('sourceCode')
@@ -42,7 +41,7 @@ export class SrdPipelineTestStack extends cdk.Stack {
             actions: [
                 new cpa.CodeBuildAction({
                     actionName: 'Build',
-                    //role: iam.Role.fromRoleArn(this,'mo-cross-account-build','arn:aws:iam::107711577954:role/test-mo-cross-account-pipeline-role'),
+                    role: iam.Role.fromRoleArn(this,'test-mo-cross-account-pipeline-role','arn:aws:iam::107711577954:role/test-mo-cross-account-pipeline-role'),
                     input: sourceCode,
                     outputs: [cdkBuildOutput],
                     project: new PipelineProject(this, 'CodeBuildProject', {
